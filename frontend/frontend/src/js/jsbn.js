@@ -6,11 +6,13 @@
 // Basic JavaScript BN library - subset useful for RSA encryption.
 
 // Bits per digit
+
+/* eslint react/prop-types: 0 */
 var dbits;
 
 // JavaScript engine analysis
 var canary = 0xdeadbeefcafe;
-var j_lm = ((canary&0xffffff)==0xefcafe);
+var j_lm = ((canary&0xffffff)==0xefcafe);  // eslint-disable-line no-use-before-define
 
 // (public) Constructor
 function BigInteger(a,b,c) {
@@ -120,7 +122,9 @@ function bnpFromInt(x) {
   this.t = 1;
   this.s = (x<0)?-1:0;
   if(x > 0) this.arr[0] = x;
-  else if(x < -1) this.arr[0] = x+DV;
+
+  // eslint-disable-next-line no-undef
+  else if(x < -1) this.arr[0] = x+DV; 
   else this.t = 0;
 }
 

@@ -104,7 +104,7 @@ handleClick(){
   var headers = {
     'Content-Type': 'application/json'
   }
-  console.log(params);
+  // console.log(params);
   axios({
     url: 'http://localhost:8000/authentication/login/',
     method: 'POST',
@@ -114,12 +114,20 @@ handleClick(){
       username: this.state.username
     }
   }).then((response) => {
-    sessionStorage.setItem("token", response);
-    console.log(sessionStorage.getItem("token"));
-  axios.post('http://localhost:8000/authentication/getuser/', response.data)
-  }).then((response) =>{
-    sessionStorage.setItem("userData", response);
-    console.log(sessionStorage.getItem("userData"));
+      console.log(response.data);
+      // console.log(JSON.parse(response.data));
+      sessionStorage.setItem('token', JSON.stringify(response.data));
+      console.log(sessionStorage.token);
+
+      axios.post('http://localhost:8000/authentication/getuser/', response.data)
+      .then((response) =>{
+        console.log(response.data);
+        sessionStorage.setItem("userData", JSON.stringify(response.data));
+        console.log(sessionStorage.userData);
+      })
+      .catch(error => {
+        alert(error);
+      })
   })
   .catch(error => {
     alert(error);

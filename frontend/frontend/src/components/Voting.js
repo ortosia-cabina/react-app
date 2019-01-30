@@ -10,8 +10,8 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 // import { BottomNavigationAction } from '@material-ui/core';
-// import BigInt from '../js/bigint';
-// import ElGamal from '../js/elgamal';
+import BigInt from '../js/bigint';
+import ElGamal from '../js/elgamal';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -104,19 +104,23 @@ class Voting extends Component {
                             <FormControlLabel value="option2" control={<Radio />} label="Option2" />
                             <FormControlLabel value="option3" control={<Radio />} label="Option3" />
                           </RadioGroup>
-                  <RaisedButton label="Submit" variant="contained" className={classes.button} 
-                  onClick={this.getVoting}> Vote </RaisedButton>
+                  {/* <RaisedButton label="Submit" variant="contained" className={classes.button} 
+                  onClick={this.getVoting}> Vote </RaisedButton> */}
             </FormControl>
             </ListItem>
               )
             })}
             
           </List>
+          <RaisedButton label="Logout" variant="contained" className={classes.button}
+                onClick={this.Logout}> Logout </RaisedButton>
         </MuiThemeProvider>
       </div>
     );
 
   }
+
+  
 
   handleChange = name => event => {
     this.setState({
@@ -133,18 +137,18 @@ class Voting extends Component {
           .then(response => {
             console.log(response);
             let voting = JSON.parse(response._bodyText)[0];
-            // let bigpk = {
-            //     p: BigInt.fromJSONObject(voting.pub_key.p.toString()),
-            //     g: BigInt.fromJSONObject(voting.pub_key.g.toString()),
-            //     y: BigInt.fromJSONObject(voting.pub_key.y.toString()),
-            // };
+            let bigpk = {
+                p: BigInt.fromJSONObject(voting.pub_key.p.toString()),
+                g: BigInt.fromJSONObject(voting.pub_key.g.toString()),
+                y: BigInt.fromJSONObject(voting.pub_key.y.toString()),
+            };
             this.setState(
                 {
                   voting : JSON.parse(response)[0],
                   title : voting.name,
                   desc : voting.desc,
                   questions: voting.questions,
-                  // bigpk : bigpk
+                  bigpk : bigpk
                 }
 
             );
@@ -163,9 +167,8 @@ class Voting extends Component {
 
     _decideEncrypt() {
       let msg = this.state.itemsSelected;
-      // let bigmsg = BigInt.fromJSONObject(JSON.stringify(msg));
-      let cipher = null
-      //  ElGamal.encrypt(this.state.bigpk, bigmsg);
+      let bigmsg = BigInt.fromJSONObject(JSON.stringify(msg));
+      let cipher = ElGamal.encrypt(this.state.bigpk, bigmsg);
       return cipher;
   };
   
