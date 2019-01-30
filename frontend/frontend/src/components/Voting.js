@@ -104,8 +104,8 @@ class Voting extends Component {
                             <FormControlLabel value="option2" control={<Radio />} label="Option2" />
                             <FormControlLabel value="option3" control={<Radio />} label="Option3" />
                           </RadioGroup>
-                  {/* <RaisedButton label="Submit" variant="contained" className={classes.button} 
-                  onClick={this.getVoting}> Vote </RaisedButton> */}
+                  <RaisedButton label="Submit" variant="contained" className={classes.button} 
+                  onClick={this.getVoting}> Vote </RaisedButton>
             </FormControl>
             </ListItem>
               )
@@ -120,7 +120,22 @@ class Voting extends Component {
 
   }
 
-  
+  Logout(){
+    var headers = {
+      'Content-Type': 'application/json'
+    }
+    var token = sessionStorage.getItem("token");
+    axios.post('http://localhost:8000/authentication/logout/', token)
+      .then((response) =>{
+        // console.log(response.data);
+        // sessionStorage.setItem("userData", response.data);
+        // console.log(sessionStorage.getItem("userData"));
+      })
+      .catch(error => {
+        alert(error);
+      })
+      sessionStorage.clear();
+  }
 
   handleChange = name => event => {
     this.setState({
