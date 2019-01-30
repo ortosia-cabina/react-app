@@ -97,14 +97,10 @@ class Login extends React.Component {
   
 
 handleClick(){
-  const params = {
-    password: this.state.password,
-    username: this.state.username
-  }
+
   var headers = {
     'Content-Type': 'application/json'
   }
-  // console.log(params);
   axios({
     url: 'http://localhost:8000/authentication/login/',
     method: 'POST',
@@ -122,7 +118,7 @@ handleClick(){
       axios.post('http://localhost:8000/authentication/getuser/', response.data)
       .then((response) =>{
         console.log(response.data);
-        sessionStorage.setItem("userData", JSON.stringify(response.data));
+        sessionStorage.setItem('userData', JSON.stringify(response.data));
         console.log(sessionStorage.userData);
       })
       .catch(error => {

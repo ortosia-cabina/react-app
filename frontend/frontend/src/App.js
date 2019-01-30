@@ -2,7 +2,7 @@ import React from 'react';
 import 'antd/dist/antd.css'; 
 import './App.css';
 import CustomLayout from './containers/Layout';
-import VotingView from './containers/VotingView';
+import Voting from './components/Voting';
 import Login from './components/Login';
 
 class App extends React.Component {
@@ -58,12 +58,11 @@ class App extends React.Component {
 //   document.body.appendChild(script5);
 // }
   render() {
-    if(sessionStorage.getItem("userData")){
+    if(sessionStorage.userData){
       return (
         <div className="App">
           <CustomLayout >
-            <VotingView/> 
-            {/* <Login onLogin={this.getLoginData}/>  */}
+            <Voting/> 
           </CustomLayout>
           </div>
       );
@@ -71,7 +70,6 @@ class App extends React.Component {
       return (
         <div className="App">
           <CustomLayout >
-            {/* <VotingView getLoginData={this.getLoginData}/> */}
             <Login/>
           </CustomLayout>
         </div>

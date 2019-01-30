@@ -28,7 +28,6 @@ const styles = theme => ({
   root:{
     width: '100%',
     maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
   },
   inline: {
     display: 'inline',
@@ -56,9 +55,6 @@ const styles = theme => ({
 },
 });
 
-var votingId = 1;
-var userData = sessionStorage.getItem("userData");
-var token = sessionStorage.getItem("token");
 
 class Voting extends Component {
   constructor(props){
@@ -68,8 +64,8 @@ class Voting extends Component {
         title: '',
         questions: [],
         desc: '',
-        voter: userData.id,
-        token: token,
+        voter: '',
+        token: '',
         bigpk : null,
         
         selectedItems: {}
@@ -87,26 +83,25 @@ class Voting extends Component {
             {this.state.questions.map((question,i) => {
               return(
                 <ListItem alignitems="flex-start">
-              <ListItemText primary={question.desc}
+              <ListItemText primary={question.name}
                   secondary={
                         <React.Fragment>
-                      <Typography component="span" className={classes.inline} color="textPrimary">
-                      {this.state.desc}
-                      </Typography>
-                    </React.Fragment>
-                      } />
-                 <FormControl className={classes.textField} noValidate autoComplete="off" styles={{display:'flex'}}>
-                            <FormLabel component = "legend">Question</FormLabel>
+                       <FormControl className={classes.textField} noValidate autoComplete="off" styles={{display:'flex'}}>
+                            <FormLabel component = "legend">{question.desc}</FormLabel>
                             <RadioGroup aria-label="Question" className={classes.group}
                             value={this.state.value}  onChange={this.handleChange} >
-                            <FormControlLabel value={this.state.voting.questions[0].options[0]} 
+                            <FormControlLabel value={question.options[i]} 
                                               control={<Radio />} label="Option1" />
-                            <FormControlLabel value="option2" control={<Radio />} label="Option2" />
-                            <FormControlLabel value="option3" control={<Radio />} label="Option3" />
+                            <FormControlLabel value={question.options[i]}
+                                              control={<Radio />} label="Option2" />
+                            <FormControlLabel value={question.options[i]} 
+                                              control={<Radio />} label="Option3" />
                           </RadioGroup>
                   <RaisedButton label="Submit" variant="contained" className={classes.button} 
                   onClick={this.getVoting}> Vote </RaisedButton>
             </FormControl>
+                    </React.Fragment>
+                      } />
             </ListItem>
               )
             })}
@@ -121,13 +116,13 @@ class Voting extends Component {
   }
 
   Logout(){
-    var headers = {
-      'Content-Type': 'application/json'
-    }
+    // var headers = {
+    //   'Content-Type': 'application/json'
+    // }
     var token = sessionStorage.getItem("token");
     axios.post('http://localhost:8000/authentication/logout/', token)
       .then((response) =>{
-        // console.log(response.data);
+        console.log(response.data);
         // sessionStorage.setItem("userData", response.data);
         // console.log(sessionStorage.getItem("userData"));
       })
@@ -144,26 +139,36 @@ class Voting extends Component {
 };
 
   getVoting(){
-    if(userData.id !== null && token !== null){
-      axios.get('http://localhost:8000/census/'+ votingId + '/?voter_id=' + userData.id)
+
+    var votingId = 1;
+    if(sessionStorage.userData){
+       var userData = sessionStorage.userData;
+       var parsedData = JSON.parse(userData);
+       console.log('userData: ' + userData);
+       console.log('parsed data: ' + parsedData);
+    
+    var token = sessionStorage.getItem('token');
+    console.log(parsedData.id);
+    if(parsedData.id !== null && token !== null){
+      axios.get('http://localhost:8000/census/'+ votingId + '/?voter_id=' + parsedData.id)
       .then((response) =>{
         if(response.status === 200){
           axios.get('http://localhost:8000/voting/?id=' + votingId)
           .then(response => {
-            console.log(response);
-            let voting = JSON.parse(response._bodyText)[0];
-            let bigpk = {
-                p: BigInt.fromJSONObject(voting.pub_key.p.toString()),
-                g: BigInt.fromJSONObject(voting.pub_key.g.toString()),
-                y: BigInt.fromJSONObject(voting.pub_key.y.toString()),
-            };
+            console.log(response.data);
+            // let bigpk = {
+            //     p: BigInt.fromJSONObject(response.data[0].pub_key.p.toString()),
+            //     g: BigInt.fromJSONObject(response.data[0].pub_key.g.toString()),
+            //     y: BigInt.fromJSONObject(response.data[0].pub_key.y.toString()),
+            // };
             this.setState(
                 {
-                  voting : JSON.parse(response)[0],
-                  title : voting.name,
-                  desc : voting.desc,
-                  questions: voting.questions,
-                  bigpk : bigpk
+                  voting : response.data[0],
+                  title : response.data[0].name,
+                  desc : response.data[0].desc,
+                  questions: response.data[0].questions,
+                  // bigpk : bigpk
+                  bigpk : null
                 }
 
             );
@@ -176,6 +181,7 @@ class Voting extends Component {
           alert(error);
         })
       }
+    }
     };
 
 
@@ -222,47 +228,6 @@ class Voting extends Component {
 
 };
 
-
-
- 
-
-    
-  // handleClick(){
-  //     const params = new URLSearchParams();
-  //     params.append('voting', this.state.voting);
-  //     params.append('questions', this.state.questions);
-  //     params.append('voter', this.state.voter);
-  //     params.append('token', this.state.token);
-  //     axios.post(apiBaseUrl+'login/', params)
-      
-    
-  //   .then(function (response) {
-  //     //console.log(response);
-  //       document.cookie = 'decide='+response.token+';';
-  //       const param = new URLSearchParams();
-  //       param.append('token', response.data.token)
-  //         axios.post(apiBaseUrl+'getuser/', param)
-  //         .then(function(response2){
-  //           console.log(response2.status)
-  //           if(response2.status === 200){
-  //             console.log("Login successfull");
-              
-  //           }
-  //           else if(response2.status === 204){
-  //               console.log("Username password do not match");
-  //               alert(response2.data.success)
-  //           }
-  //           else{
-  //               console.log("Username does not exists");
-  //               alert("Username does not exist");
-  //           }
-  //         }).catch(error => {
-  //           alert(error);
-  //         });
-        
-  //   })
-  //   }
-  
   
   Voting.propTypes = {
   classes: PropTypes.object.isRequired,
